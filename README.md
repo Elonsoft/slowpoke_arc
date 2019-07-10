@@ -1,21 +1,71 @@
 # SlowpokeArc
 
-**TODO: Add description**
+Provides a storage module for Arc.
+
+With this storage method, all images are stored locally first,
+then are queued to be uploaded to AWS, and after uploading is
+done, the local copy is deleted. Either an uploading is in progress
+or is already done, the returned url for the resource is always
+valid.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `slowpoke_arc` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `slowpoke_arc` to your list of
+dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:slowpoke_arc, "~> 0.1.0"}
+    {
+      :slowpoke_arc,
+      git: "https://github.com/Elonsoft/slowpoke_arc",
+      commit: "4d4febea487a10f0091092e2a6594c1deb629b28"
+    }
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/slowpoke_arc](https://hexdocs.pm/slowpoke_arc).
+## Usage
 
+To use it, define your configured module:
+
+```elixir
+defmodule MyApp.Storage do
+  use SlowpokeArc
+end
+```
+
+and then you can add it to config:
+
+```elixir
+config :arc, storage: MyApp.Storage
+```
+
+By default it uses `Arc.Storage.Local` for locally saved files
+and `Arc.Storage.S3` for uploadings, but you can change this
+behavior by providing options when using. The example above is
+equivalent to the following one:
+
+```elixir
+defmodule MyApp.Storage do
+  use SlowpokeArc,
+    local_storage: Arc.Storage.Local,
+    inet_storage: Arc.Storage.S3
+end
+```
+
+All configuration needed for storage modules is provided
+separately:
+
+```elixir
+config :arc,
+  storage: MyApp.Storage,
+  storage_dir: "/pictures_with_cats",
+  bucket: "<your-bucket-name>",
+  virtual_host: true
+
+config :ex_aws,
+  access_key_id: ["<your-key-id>", :instance_role],
+  secret_access_key: ["<your-secret-key>", :instance_role],
+  region: "<your-region>"
+```
