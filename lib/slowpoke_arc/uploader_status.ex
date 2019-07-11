@@ -5,16 +5,19 @@ defmodule SlowpokeArc.UploaderStatus do
 
   use GenServer
 
+  alias __MODULE__, as: State
   alias SlowpokeArc.Storage
+
+  defstruct files: [], callbacks: %{}
 
   @spec mark_as_uploaded(Storage.file_spec()) :: :ok
   def mark_as_uploaded(file) do
     GenServer.cast(__MODULE__, {:mark_as_uploaded, file})
   end
 
-  @spec add_to_query(Storage.file_spec()) :: :ok
-  def add_to_query(file) do
-    GenServer.cast(__MODULE__, {:add_to_query, file})
+  @spec add_to_queue(Storage.file_spec()) :: :ok
+  def add_to_queue(file) do
+    GenServer.cast(__MODULE__, {:add_to_queue, file})
   end
 
   @spec do_on_uploaded(Storage.file_spec(), (() -> any)) :: :ok
@@ -28,7 +31,7 @@ defmodule SlowpokeArc.UploaderStatus do
   end
 
   def init(_opts) do
-    {:ok, %{files: [], callbacks: %{}}}
+    {:ok, %State{}}
   end
 
   def start_link(opts) do
@@ -36,19 +39,19 @@ defmodule SlowpokeArc.UploaderStatus do
   end
 
   def handle_cast({:mark_as_uploaded, file}, state) do
-    %{files: files, callbacks: callbacks} = state
+    %State{files: files, callbacks: callbacks} = state
     new_files = Enum.filter(files, &(&1 != file))
     new_callbacks = Map.drop(callbacks, [file])
     execute_callbacks(new_files, callbacks)
     {:noreply, %{state | files: new_files, callbacks: new_callbacks}}
   end
 
-  def handle_cast({:add_to_query, file}, %{files: files} = state) do
+  def handle_cast({:add_to_queue, file}, %State{files: files} = state) do
     {:noreply, %{state | files: [file | files]}}
   end
 
   def handle_cast({:do_on_uploaded, file, callback}, state) do
-    %{callbacks: callbacks_map} = state
+    %State{callbacks: callbacks_map} = state
 
     new_callbacks =
       Map.update(callbacks_map, file, [callback], fn callbacks ->
@@ -59,7 +62,7 @@ defmodule SlowpokeArc.UploaderStatus do
   end
 
   def handle_call({:still_in_progress_p, file}, _from, state) do
-    %{files: files} = state
+    %State{files: files} = state
     {:reply, Enum.member?(files, file), state}
   end
 
