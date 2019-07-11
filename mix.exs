@@ -25,8 +25,9 @@ defmodule SlowpokeArc.MixProject do
   defp deps do
     [
       {:arc, ">= 0.8.0"},
-      {:ex_aws, "~> 2.0"},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
+      {:credo, "~> 1.0.5", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
+      {:ex_aws, "~> 2.0"}
     ]
   end
 end

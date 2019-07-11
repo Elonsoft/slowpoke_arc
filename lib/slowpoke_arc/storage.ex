@@ -17,11 +17,8 @@ defmodule SlowpokeArc.Storage do
   @spec do_put(FileSpec.t(), storage, storage) :: {:ok, String.t()}
   def do_put(file_spec, local_storage, inet_storage) do
     {definition, version, {file, scope}} = file_spec
-    file_spec_hash = FileSpec.hash(file_spec)
 
     with {:ok, file_name} <- local_storage.put(definition, version, {file, scope}) do
-      # IO.inspect({:put, file_spec_hash, file_spec})
-
       {:ok, _pid} = InetUploader.put(file_spec, local_storage, inet_storage)
       {:ok, file_name}
     end
@@ -31,8 +28,6 @@ defmodule SlowpokeArc.Storage do
   def do_url(file_spec, local_storage, inet_storage, options \\ []) do
     {definition, version, file_and_scope} = file_spec
     file_spec_hash = FileSpec.hash(file_spec)
-
-    # IO.inspect({:url, file_spec_hash})
 
     if UploaderStatus.still_in_progress?(file_spec_hash) do
       local_storage.url(definition, version, file_and_scope, options)
@@ -44,7 +39,6 @@ defmodule SlowpokeArc.Storage do
   @spec do_delete(FileSpec.t(), storage, storage) :: :ok
   def do_delete(file_spec, _local_storage, inet_storage) do
     file_spec_hash = FileSpec.hash(file_spec)
-    # IO.inspect({:delete, file_spec_hash})
 
     if UploaderStatus.still_in_progress?(file_spec_hash) do
       InetUploader.delete_after_uploading(file_spec, inet_storage)
