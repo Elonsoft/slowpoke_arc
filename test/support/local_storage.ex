@@ -8,9 +8,9 @@ defmodule SlowpokeArcTest.LocalStorage do
     {:ok, file.file_name}
   end
 
-  def url(definition, version, file_and_scope, options \\ []) do
+  def url(definition, version, {file, _} = file_and_scope, options \\ []) do
     Mediator.cast({:url_local, {definition, version, file_and_scope}, options})
-    ""
+    "file:///" <> file.file_name
   end
 
   def delete(definition, version, file_and_scope) do

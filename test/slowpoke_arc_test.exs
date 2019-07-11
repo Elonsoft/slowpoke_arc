@@ -1,7 +1,7 @@
 defmodule SlowpokeArcTest do
   use ExUnit.Case
 
-  alias SlowpokeArcTest.{Mediator, MyImage}
+  alias SlowpokeArcTest.{Mediator, MyImage, ImageWithBrokenInetStorage}
 
   test "correctly performs uploading" do
     Mediator.start_link(self())
@@ -22,6 +22,18 @@ defmodule SlowpokeArcTest do
     assert :put_inet = first
     assert :delete_local = second
     assert :delete_inet = third
+    Mediator.stop()
+  end
+
+  test "returns local url if inet upoading failed" do
+    Mediator.start_link(self())
+
+    assert {:ok, "pushka.png" = file_name} =
+             ImageWithBrokenInetStorage.store({"test/support/pushka.png", :oiginal})
+
+    assert_receive {:put_local, _}
+    refute_receive {:put_inet, _}
+    assert "file:///pushka.png" = ImageWithBrokenInetStorage.url({file_name, :original})
     Mediator.stop()
   end
 
