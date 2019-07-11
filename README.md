@@ -19,7 +19,7 @@ def deps do
     {
       :slowpoke_arc,
       git: "https://github.com/Elonsoft/slowpoke_arc",
-      commit: "4d4febea487a10f0091092e2a6594c1deb629b28"
+      commit: "3a5383850ba6e2a5e996eaaa8ab8fc8b79ea2c6e"
     }
   ]
 end
