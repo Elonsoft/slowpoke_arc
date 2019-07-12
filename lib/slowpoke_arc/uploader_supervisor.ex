@@ -14,6 +14,6 @@ defmodule SlowpokeArc.UploaderSupervisor do
   end
 
   def start_child(task) do
-    Task.Supervisor.start_child(__MODULE__, task)
+    Task.Supervisor.start_child(__MODULE__, task, restart: :transient)
   end
 end

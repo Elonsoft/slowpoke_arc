@@ -4,7 +4,7 @@ defmodule SlowpokeArcTest.BrokenInetStorage do
   alias SlowpokeArcTest.Mediator
 
   def put(definition, version, {file, _} = file_and_scope) do
-    Process.sleep(5_000)
+    Process.sleep(:infinity)
     Mediator.cast({:put_inet, {definition, version, file_and_scope}})
     {:ok, file.file_name}
   end
@@ -15,7 +15,7 @@ defmodule SlowpokeArcTest.BrokenInetStorage do
   end
 
   def delete(definition, version, file_and_scope) do
-    Process.sleep(5_000)
+    Process.sleep(:infinity)
     Mediator.cast({:delete_inet, {definition, version, file_and_scope}})
     :ok
   end
