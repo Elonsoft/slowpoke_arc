@@ -55,9 +55,8 @@ defmodule SlowpokeArc.InetUploader do
 
   defp handle_reply(reply) do
     Logger.error(
-      "Image uploading failed with status: #{:io_lib.format('~p', [reply])}. Restarting after #{
-        @timeout
-      } ms..."
+      "Image uploading failed with status: " <>
+        "#{:io_lib.format('~p', [reply])}. Restarting after #{@timeout} ms..."
     )
 
     Process.sleep(@timeout)
