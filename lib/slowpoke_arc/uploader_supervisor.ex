@@ -1,7 +1,6 @@
 defmodule SlowpokeArc.UploaderSupervisor do
-  @moduledoc """
-  Supervises all uploading and deleting tasks.
-  """
+  @moduledoc false
+  # Supervises all uploading and deleting tasks.
 
   def child_spec(user_opts) do
     default_opts = [strategry: :one_for_one, name: __MODULE__]

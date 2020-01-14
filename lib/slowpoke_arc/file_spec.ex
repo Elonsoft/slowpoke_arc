@@ -1,7 +1,6 @@
 defmodule SlowpokeArc.FileSpec do
-  @moduledoc """
-  Provides functions to deel with file_specs.
-  """
+  @moduledoc false
+  # Provides functions to deel with file_specs.
 
   # Why not define a type for YOUR struct in YOUR library so
   # OTHERS doesn't have to define it themselves? O_o

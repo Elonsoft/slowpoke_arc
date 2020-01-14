@@ -1,14 +1,13 @@
 defmodule SlowpokeArc.Storage do
-  @moduledoc """
-  The module that's responsible for file uploading.
+  @moduledoc false
 
-  Wraps logic behind implementation of Arc.Storage callbacks:
-  `put/3`, `url/3` and `delete/3`. You are not supposed to use
-  the module directly, use `SlowpokeArc` instead.
-
-  Note: There is no such a behaviour as Arc.Storage, but Arc
-  follows it so shall we.
-  """
+  # The module that's responsible for file uploading.
+  #
+  # Wraps logic behind implementation of `put/3`, `url/3` and `delete/3`
+  # callbacks.
+  #
+  # Note: There is no such a behaviour as Arc.Storage, but Arc
+  # follows it so shall we.
 
   alias SlowpokeArc.{InetUploader, UploaderStatus, FileSpec}
 

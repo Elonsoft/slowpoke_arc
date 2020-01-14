@@ -1,7 +1,6 @@
 defmodule SlowpokeArc.InetUploader do
-  @moduledoc """
-  Manages syncronous uploads to S3.
-  """
+  @moduledoc false
+  # Manages syncronous uploads to S3.
 
   require Logger
 

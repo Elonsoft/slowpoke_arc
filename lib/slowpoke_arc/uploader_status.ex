@@ -1,7 +1,6 @@
 defmodule SlowpokeArc.UploaderStatus do
-  @moduledoc """
-  Manages task processing accounting.
-  """
+  @moduledoc false
+  # Manages task processing accounting.
 
   use GenServer
 
