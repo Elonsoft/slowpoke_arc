@@ -23,7 +23,7 @@ dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:slowpoke_arc, "~> 0.1"}
+    {:slowpoke_arc, "~> 0.2"}
   ]
 end
 ```

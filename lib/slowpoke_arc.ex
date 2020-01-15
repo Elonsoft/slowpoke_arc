@@ -31,8 +31,10 @@ defmodule SlowpokeArc do
           inet_storage: Arc.Storage.S3
       end
 
-  All configuration needed for storage modules is provided
-  separately:
+  ## Configuration
+
+  Configuration of storages is pretty much the same as with default arc
+  storages:
 
       config :arc,
         storage: MyApp.Storage,
@@ -44,29 +46,76 @@ defmodule SlowpokeArc do
         access_key_id: ["<your-key-id>", :instance_role],
         secret_access_key: ["<your-secret-key>", :instance_role],
         region: "<your-region>"
+
+  ## Static
+
+  You may want to replace your `Plug.Static` with the one that provides
+  your storage:
+
+      plug MyApp.Storage.StaticPlug,
+        at: "/uploads",
+        from: {:my_app, "uploads"}
+
+  See `SlowpokeArc.StaticPlug` for more details.
   """
 
   defmacro __using__(opts) do
     local_storage = opts[:local_storage] || Arc.Storage.Local
     inet_storage = opts[:inet_storage] || Arc.Storage.S3
+    caller_module = __CALLER__.module
 
     quote do
-      @local_storage unquote(local_storage)
-      @inet_storage unquote(inet_storage)
+      def __local_storage__, do: unquote(local_storage)
+      def __inet_storage__, do: unquote(inet_storage)
+
+      defmodule LocalStorageDefinition do
+        use Arc.Definition
+        def __storage, do: unquote(local_storage)
+      end
+
+      defmodule InetStorageDefinition do
+        use Arc.Definition
+        def __storage, do: unquote(inet_storage)
+      end
+
+      defmodule StaticPlug do
+        @moduledoc """
+        StaticPlug for #{__MODULE__} storage.
+
+        See `SlowpokeArc.StaticPlug` for details.
+        """
+
+        def init(opts), do: opts
+
+        def call(conn, static_opts) do
+          opts = Keyword.put(static_opts, :arc_definition, unquote(caller_module))
+          SlowpokeArc.StaticPlug.call(conn, opts)
+        end
+      end
 
       def put(definition, version, file_and_scope) do
-        file_spec = {definition, version, file_and_scope}
-        SlowpokeArc.Storage.do_put(file_spec, @local_storage, @inet_storage)
+        SlowpokeArc.Storage.do_put(
+          {definition, version, file_and_scope},
+          __local_storage__(),
+          __inet_storage__()
+        )
       end
 
       def url(definition, version, file_and_scope, opts \\ []) do
-        file_spec = {definition, version, file_and_scope}
-        SlowpokeArc.Storage.do_url(file_spec, @local_storage, @inet_storage, opts)
+        SlowpokeArc.Storage.do_url(
+          {definition, version, file_and_scope},
+          __local_storage__(),
+          __inet_storage__(),
+          opts
+        )
       end
 
       def delete(definition, version, file_and_scope) do
-        file_spec = {definition, version, file_and_scope}
-        SlowpokeArc.Storage.do_delete(file_spec, @local_storage, @inet_storage)
+        SlowpokeArc.Storage.do_delete(
+          {definition, version, file_and_scope},
+          __local_storage__(),
+          __inet_storage__()
+        )
       end
     end
   end
